@@ -19,7 +19,10 @@ canvas {
   inset: 0;
 }
 
+#tabs {
+  position: absolute;
+}
+
 button {
   font-size:2rem;
 }
-
