@@ -1,4 +1,4 @@
-import { Application, Container, Point, Sprite, Texture } from "pixi.js";
+import { Application, Container, Point, Sprite, Text, Texture } from "pixi.js";
 
 export type Set = 'A' | 'B';
 
@@ -20,7 +20,7 @@ export async function loadMap(app: Application, container: Container, set: Set) 
                 (tileSize * row) + (tileSize / 2)
             );
 
-            await createTile(container, textureUrl, tileCenter, tileSize);
+            await createTile(container, textureUrl, `Col=${col} Row=${row}`,  tileCenter, tileSize);
         }
     }
 
@@ -67,12 +67,13 @@ function getTextureUrls(set: Set) {
     ]
 }
 
-async function createTile(container: Container, url: string, tileCenter: Point, tileSize: number) {
+async function createTile(container: Container, url: string, label: string, tileCenter: Point, tileSize: number) {
 
     const texture = await Texture.fromURL(url)
     const aspectRatio = texture.width / texture.height;
 
     const tile = Sprite.from(texture);
+    container.addChild(tile);
 
     if (aspectRatio > 1) {
         tile.width = tileSize;
@@ -82,9 +83,22 @@ async function createTile(container: Container, url: string, tileCenter: Point, 
         tile.height = tileSize;
     }
 
+    // add padding
+    // const paddingScale = 1 - ((1 / tileSize) * 15);
+    // tile.width *= paddingScale;
+    // tile.height *= paddingScale;
+
     tile.x = tileCenter.x - (tile.width / 2);
     tile.y = tileCenter.y - (tile.height / 2);
 
-    container.addChild(tile);
+    // Add label
+    const labelElement = new Text(label, {
+        fontSize: 12,
+        fill: 0xff0000
+    });
+    labelElement.x = tileCenter.x - (tileSize / 2);
+    labelElement.y = tileCenter.y - (tileSize / 2);
+    container.addChild(labelElement);
+    
     return tile;
 }
