@@ -1,14 +1,12 @@
-import { Application, Point, Sprite, Texture } from "pixi.js";
+import { Application, Container, Point, Sprite, Texture } from "pixi.js";
 
 export type Set = 'A' | 'B';
 
-export async function loadMap(app: Application, set: Set) {
-
+export async function loadMap(app: Application, container: Container, set: Set) {
 
     const tileSize = Math.min(app.view.height, app.view.width) / 5;
 
     const map = getTextureUrls(set);
-    const tiles: Sprite[] = [];
 
     for (let row = 0; row < map.length; row++) {
         for (let col = 0; col < map[row].length; col++) {
@@ -22,12 +20,11 @@ export async function loadMap(app: Application, set: Set) {
                 (tileSize * row) + (tileSize / 2)
             );
 
-            const tile = await createTile(app, textureUrl, tileCenter, tileSize);
-            tiles.push(tile);
+            await createTile(container, textureUrl, tileCenter, tileSize);
         }
     }
 
-    return tiles;
+    return container;
 }
 
 function getTextureUrls(set: Set) {
@@ -70,18 +67,12 @@ function getTextureUrls(set: Set) {
     ]
 }
 
-async function createTile(app: Application, url: string, tileCenter: Point, tileSize: number) {
+async function createTile(container: Container, url: string, tileCenter: Point, tileSize: number) {
 
     const texture = await Texture.fromURL(url)
-
-    const tile = Sprite.from(texture);
-    app.stage.addChild(tile);
-
     const aspectRatio = texture.width / texture.height;
 
-    // Place top/left corner at center first
-    tile.x = tileCenter.x;
-    tile.y = tileCenter.y;
+    const tile = Sprite.from(texture);
 
     if (aspectRatio > 1) {
         tile.width = tileSize;
@@ -91,8 +82,9 @@ async function createTile(app: Application, url: string, tileCenter: Point, tile
         tile.height = tileSize;
     }
 
-    tile.x -= tile.width / 2;
-    tile.y -= tile.height / 2;
+    tile.x = tileCenter.x - (tile.width / 2);
+    tile.y = tileCenter.y - (tile.height / 2);
 
+    container.addChild(tile);
     return tile;
 }

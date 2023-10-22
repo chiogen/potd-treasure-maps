@@ -18,3 +18,8 @@ canvas {
   position: fixed;
   inset: 0;
 }
+
+button {
+  font-size:2rem;
+}
+
