@@ -14,7 +14,7 @@ new ViewControl(app).attach();
 document.body.appendChild(app.view as HTMLCanvasElement);
 window.addEventListener('resize', udpateSize);
 
-loadMap(app, 'A');
+// loadMap(app, 'A');
 loadMap(app, 'B');
 
 function udpateSize() {

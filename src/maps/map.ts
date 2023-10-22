@@ -1,21 +1,25 @@
-import { Application, Sprite } from "pixi.js";
+import { Application, Sprite, Texture } from "pixi.js";
 
 export type Set = 'A' | 'B';
 
-export function loadMap(app: Application, set: Set) {
+export async function loadMap(app: Application, set: Set) {
+
     const map = getTextureUrls(set);
+    const tiles: Sprite[] = [];
 
     for (let row = 0; row < map.length; row++) {
         for (let col = 0; col < map[row].length; col++) {
 
-            const tile = map[row][col];
-            if (!tile)
+            const textureUrl = map[row][col];
+            if (!textureUrl)
                 continue;
 
-            createTile(app, tile, col, row);
-
+            const tile = await createTile(app, textureUrl, col, row);
+            tiles.push(tile);
         }
     }
+
+    return tiles;
 }
 
 function getTextureUrls(set: Set) {
@@ -58,16 +62,22 @@ function getTextureUrls(set: Set) {
     ]
 }
 
+async function createTile(app: Application, url: string, col: number, row: number) {
 
-function createTile(app: Application, url: string, col: number, row: number) {
-    const tile = Sprite.from(url);
+    const texture = await Texture.fromURL(url)
+
+    const tile = Sprite.from(texture);
     app.stage.addChild(tile);
 
     const size = Math.min(app.view.height, app.view.width) / 5;
 
-    tile.x = size * col;
-    tile.y = size * row;
-
-    tile.width = size;
+    const aspectRatio = texture.width / texture.height;
+    tile.width = size / aspectRatio;
     tile.height = size;
+
+    tile.x = (size * col);
+    tile.x += (size - tile.width) / 2;
+    tile.y = (size * row);
+
+    return tile;
 }
