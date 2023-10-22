@@ -2,7 +2,7 @@ import { Application, Container, Point, Sprite, Text, Texture } from "pixi.js";
 
 export type Set = 'A' | 'B';
 
-export async function loadMap(app: Application, container: Container, set: Set) {
+export function loadMap(app: Application, container: Container, set: Set) {
 
     const tileSize = Math.min(app.view.height, app.view.width) / 5;
 
@@ -20,11 +20,13 @@ export async function loadMap(app: Application, container: Container, set: Set) 
                 (tileSize * row) + (tileSize / 2)
             );
 
-            await createTile(container, textureUrl, `Col=${col} Row=${row}`,  tileCenter, tileSize);
+            const label = `Col=${col + 1} Row=${row + 1}`;
+
+            createTile(container, textureUrl, label, tileCenter, tileSize);
+
         }
     }
 
-    return container;
 }
 
 function getTextureUrls(set: Set) {
@@ -99,6 +101,6 @@ async function createTile(container: Container, url: string, label: string, tile
     labelElement.x = tileCenter.x - (tileSize / 2);
     labelElement.y = tileCenter.y - (tileSize / 2);
     container.addChild(labelElement);
-    
+
     return tile;
 }
